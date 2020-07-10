@@ -1,0 +1,49 @@
+{
+  "trigger": {
+    "schedule": {
+      "interval": "1m"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "search_type": "query_then_fetch",
+        "indices": [
+          "*"
+        ],
+        "rest_total_hits_as_int": true,
+        "body": {
+          "size": 0,
+          "query": {
+            "match_all": {}
+          }
+        }
+      }
+    }
+  },
+  "condition": {
+    "compare": {
+      "ctx.payload.hits.total": {
+        "gte": 10
+      }
+    }
+  },
+  "actions": {
+    "opsgenie": {
+      "webhook": {
+        "scheme": "https",
+        "host": "api.opsgenie.com",
+        "port": 443,
+        "method": "post",
+        "path": "/v1/json/eswatcher",
+        "params": {
+          "apiKey": "bdcc441a-333c-4c11-b5a3-1698f57e612d"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{{#toJson}}ctx{{/toJson}}"
+      }
+    }
+  }
+}
