@@ -1,7 +1,7 @@
 {
   "trigger": {
     "schedule": {
-      "interval": "1m"
+      "interval": "3m"
     }
   },
   "input": {
@@ -13,9 +13,25 @@
         ],
         "rest_total_hits_as_int": true,
         "body": {
-          "size": 0,
           "query": {
-            "match_all": {}
+            "bool": {
+              "must": [
+                {
+                  "match_phrase": {
+                    "message": "session opened for user tomcat by (uid=0)"
+                  }
+                }
+              ],
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-3m"
+                    }
+                  }
+                }
+              ]
+            }
           }
         }
       }
@@ -24,7 +40,7 @@
   "condition": {
     "compare": {
       "ctx.payload.hits.total": {
-        "gte": 10
+        "gt": 0
       }
     }
   },
@@ -42,7 +58,7 @@
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": "{{#toJson}}ctx{{/toJson}}"
+        "body": "{{#toJson}}Tomcat login Alert{{/toJson}}"
       }
     }
   }
