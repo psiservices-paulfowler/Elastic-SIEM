@@ -53,7 +53,7 @@
         "method": "post",
         "path": "/v1/json/eswatcher",
         "params": {
-          "apiKey": "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+          "apiKey": "17a0eda3-53a2-4a44-999b-3dc701bb5541"
         },
         "headers": {
           "Content-Type": "application/json"
