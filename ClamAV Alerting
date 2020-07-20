@@ -1,0 +1,65 @@
+{
+  "trigger": {
+    "schedule": {
+      "interval": "5m"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "search_type": "query_then_fetch",
+        "indices": [
+          "*"
+        ],
+        "rest_total_hits_as_int": true,
+        "body": {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "match_phrase": {
+                    "message": "CLAMAV ALERT - FILE QUARANTINED"
+                  }
+                }
+              ],
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "condition": {
+    "compare": {
+      "ctx.payload.hits.total": {
+        "gt": 0
+      }
+    }
+  },
+  "actions": {
+    "opsgenie": {
+      "webhook": {
+        "scheme": "https",
+        "host": "api.opsgenie.com",
+        "port": 443,
+        "method": "post",
+        "path": "/v1/json/eswatcher",
+        "params": {
+          "apiKey": "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{{#toJson}}ClamAV has detected a malicious file on XXX{{/toJson}}"
+      }
+    }
+  }
+}
